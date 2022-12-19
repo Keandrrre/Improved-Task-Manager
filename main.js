@@ -1,6 +1,13 @@
+// Improved Task Manager / Kanban Board JS
+
+// Global Elements
+let tasks = loadTasks();
+
 // Add/Remove Tasks
 function addTask() {
-  let taskDescription = prompt;
+  let taskDescriptionSimple = prompt("Enter Task Name / Header");
+  let taskDescriptionDetailed = prompt();
+  tasks.push(newTask(taskDescriptionSimple, taskDescriptionDetailed));
 }
 
 // Drag and drop API
@@ -35,3 +42,35 @@ for (const dropZone of document.querySelectorAll(".container-dropzone")) {
 }
 
 // Helper Functions
+
+// Return task object
+function newTask(taskDescriptionSimple, taskDescriptionDetailed) {
+  return {
+    taskHeader: taskDescriptionSimple,
+    taskDescription: taskDescriptionDetailed,
+  };
+}
+
+// Save tasks array to local storage
+function saveTasks() {
+  localStorage.setItem("tasks", JSON.stringify(tasks));
+}
+
+// Load tasks array from local storage
+function loadTasks() {
+  let tasksStr = localStorage.getItem("tasks");
+  return JSON.parse(tasksStr) ?? [];
+}
+
+// Create tasks HTML using JS
+function getTasksHTML(taskDescriptionSimple, taskDescriptionDetailed) {
+  // Collapsable button element
+  let collapsableBtnEl = document.createElement("collapsableBtn");
+  collapsableBtnEl.type = "button";
+  collapsableBtnEl.class = "collapsable";
+  collapsableBtnEl.innerHTML = taskDescriptionSimple;
+
+  // Drop box div element
+  let dropBoxDivEl = document.createElement("dropBoxDiv");
+  dropBoxDivEl.class = "dropBox";
+}
