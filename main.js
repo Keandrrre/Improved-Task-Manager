@@ -70,7 +70,11 @@ function getTasksHTML(taskDescriptionSimple, taskDescriptionDetailed) {
   collapsableBtnEl.class = "collapsable";
   collapsableBtnEl.innerHTML = taskDescriptionSimple;
 
-  // Drop box div element
+  // Drop box description
+  let dropBoxDescriptionEl = document.createElement("dropBoxP");
+  dropBoxDescriptionEl.innerHTML = taskDescriptionDetailed;
+
+  // Add description to drop box div Element
   let dropBoxDivEl = document.createElement("dropBoxDiv");
-  dropBoxDivEl.class = "dropBox";
+  dropBoxDivEl.appendChild("dropBoxP");
 }

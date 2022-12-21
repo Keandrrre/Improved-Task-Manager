@@ -8,19 +8,35 @@
     <link rel="stylesheet" href="style.css" />
   </head>
   <body>
-    <h1>Improved Task Manager</h1>
-
     <!--Tasks-->
-    <div class="container-dropzone">
-      <p id="taskbox1">Not Complete</p>
-      <div id="task" draggable="true">Draggable Item Test</div>
+    <div id="taskbox-container">
+      <div class="task-container">
+        <header>To Do <button id="add-task">+</button></header>
+        <button class="task-dropbox" draggable="true">
+          Draggable Item Test
+        </button>
+        <button class="task-dropbox" draggable="true">
+          Draggable Item Test
+        </button>
+      </div>
+      <div class="task-container">
+        <header>On Hold</header>
+        <button class="task-dropbox" draggable="true">
+          Draggable Item Test
+        </button>
+        <button class="task-dropbox" draggable="true">
+          Draggable Item Test
+        </button>
+      </div>
+      <div class="task-container">
+        <header>Done</header>
+        <button class="task-dropbox" draggable="true">
+          Draggable Item Test
+        </button>
+        <button class="task-dropbox" draggable="true">
+          Draggable Item Test
+        </button>
+      </div>
     </div>
-    <div class="container-dropzone">
-      <p id="taskbox2">On Hold</p>
-    </div>
-    <div class="container-dropzone">
-      <p id="taskbox3">Completed</p>
-    </div>
-    <script src="main.js"></script>
   </body>
 </html>
