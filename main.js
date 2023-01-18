@@ -1,80 +1,201 @@
-// Improved Task Manager / Kanban Board JS
+// <----- Global Variables -----> //
 
-// Global Elements
-let tasks = loadTasks();
+// Html Elements
+let taskEl1 = document.getElementById("taskEl1");
+let taskEl2 = document.getElementById("taskEl2");
+let taskEl3 = document.getElementById("taskEl3");
+let addTaskBtn = document.getElementById("add-task");
 
-// Add/Remove Tasks
-function addTask() {
-  let taskDescriptionSimple = prompt("Enter Task Name / Header");
-  let taskDescriptionDetailed = prompt();
-  tasks.push(newTask(taskDescriptionSimple, taskDescriptionDetailed));
+// Arrays
+let tasksToDo = loadArray1();
+let tasksOnHold = loadArray2();
+let tasksDone = loadArray3();
+displayAll();
+
+// <----- Manager Functions -----> //
+
+// Add Task
+addTaskBtn.addEventListener("click", createNewTask);
+function createNewTask() {
+  let taskDescription = prompt("Task Description: ");
+  let taskHeader = prompt("Task Header");
+  if (taskDescription.length > 0 && taskHeader.length > 0) {
+    tasksToDo.push(newTask(taskDescription, taskHeader));
+  } else {
+    alert("Could not add new task.");
+  }
+  displayAll();
+  saveArrays();
 }
 
-// Drag and drop API
-const draggableElement = document.querySelector("#task");
+// <----- Drag And Drop -----> //
 
-draggableElement.addEventListener("dragstart", (e) => {
-  e.dataTransfer.setData("text/plain", draggableElement.id);
+// Html Elements
+const draggableTask = document.querySelectorAll(".task-dropbox");
+const taskContainers = document.querySelectorAll(".taskbox");
+
+// Drag Start
+draggableTask.forEach((draggable) => {
+  draggable.addEventListener("dragstart", () => {
+    draggable.classList.add("dragging");
+  });
+
+  // Drag End
+  draggable.addEventListener("dragend", () => {
+    draggable.classList.remove("dragging");
+    saveArrays();
+  });
 });
 
-for (const dropZone of document.querySelectorAll(".container-dropzone")) {
-  // When draggable element is over a drop zone
-  dropZone.addEventListener("dragover", (e) => {
+// Drag Over
+taskContainers.forEach((container) => {
+  container.addEventListener("dragover", (e) => {
     e.preventDefault();
-    dropZone.classList.add("drop-zone--over");
+    const afterElement = getDragAfterElement(container, e.clientY);
+    const draggable = document.querySelector(".dragging");
+    if (afterElement == null) {
+      container.appendChild(draggable);
+    } else {
+      container.insertBefore(draggable, afterElement);
+    }
   });
+});
 
-  // When draggable element is no longer over drop zone
-  dropZone.addEventListener("dragleave", (e) => {
-    dropZone.classList.remove("drop-zone--over");
-  });
+// Determine Position/Order of Drop
+function getDragAfterElement(container, y) {
+  const draggableTaskElements = [
+    ...container.querySelectorAll(".task-dropbox:not(.dragging)"),
+  ];
 
-  // When draggable element is dropped onto drop zone
-  dropZone.addEventListener("drop", (e) => {
-    e.preventDefault();
-
-    const droppedElementId = e.dataTransfer.getData("text/plain");
-    const droppedElement = document.getElementById(droppedElementId);
-
-    dropZone.appendChild(droppedElement);
-    dropZone.classList.remove("drop-zone--over");
-  });
+  return draggableTaskElements.reduce(
+    (closest, child) => {
+      const box = child.getBoundingClientRect();
+      const offset = y - box.top - box.height / 2;
+      if (offset < 0 && offset > closest.offset) {
+        return { offset: offset, element: child };
+      } else {
+        return closest;
+      }
+    },
+    { offset: Number.NEGATIVE_INFINITY }
+  ).element;
 }
 
-// Helper Functions
+// <----- Helper Functions -----> //
 
-// Return task object
-function newTask(taskDescriptionSimple, taskDescriptionDetailed) {
+// Save Task Arrays
+function saveArrays() {
+  // First
+  tasksToDo = [];
+  let contArray1 = [...taskEl1.querySelectorAll(".task-dropbox")];
+  for (i = 0; i < contArray1.length; i++) {
+    let header = contArray1[i].firstChild.firstChild.innerHTML;
+    console.log(header);
+    let description = contArray1[i].lastChild.innerHTML;
+    tasksToDo.push(newTask(description, header));
+  }
+  localStorage.setItem("tasks-to-do", JSON.stringify(tasksToDo));
+  // Second
+  tasksOnHold = [];
+  let contArray2 = [...taskEl2.querySelectorAll(".task-dropbox")];
+  for (i = 0; i < contArray2.length; i++) {
+    let header = contArray2[i].firstChild.firstChild.innerHTML;
+    let description = contArray2[i].lastChild.innerHTML;
+    tasksOnHold.push(newTask(description, header));
+  }
+  localStorage.setItem("tasks-on-hold", JSON.stringify(tasksOnHold));
+  // Third
+  tasksDone = [];
+  let contArray3 = [...taskEl3.querySelectorAll(".task-dropbox")];
+  for (i = 0; i < contArray3.length; i++) {
+    let header = contArray3[i].firstChild.firstChild.innerHTML;
+    let description = contArray3[i].lastChild.innerHTML;
+    tasksDone.push(newTask(description, header));
+  }
+  localStorage.setItem("tasks-done", JSON.stringify(tasksDone));
+}
+
+// Load Tasks
+function loadArray1() {
+  let taskStr = localStorage.getItem("tasks-to-do");
+  return JSON.parse(taskStr) ?? [];
+}
+function loadArray2() {
+  let taskStr = localStorage.getItem("tasks-on-hold");
+  return JSON.parse(taskStr) ?? [];
+}
+function loadArray3() {
+  let taskStr = localStorage.getItem("tasks-done");
+  return JSON.parse(taskStr) ?? [];
+}
+
+// Display Tasks
+function displayAll() {
+  // First Box
+  taskEl1.innerHTML = "";
+  for (i = 0; i < tasksToDo.length; i++) {
+    taskEl1.appendChild(getTaskHTML(tasksToDo[i], i));
+  }
+  // Second Box
+  taskEl2.innerHTML = "";
+  for (i = 0; i < tasksOnHold.length; i++) {
+    taskEl2.appendChild(getTaskHTML(tasksOnHold[i], i));
+  }
+  // Third Box
+  taskEl3.innerHTML = "";
+  for (i = 0; i < tasksDone.length; i++) {
+    taskEl3.appendChild(getTaskHTML(tasksDone[i], i));
+  }
+}
+
+// Get Task Html
+function getTaskHTML(task, index) {
+  // Create Header Text
+  let headerText = document.createElement("span");
+  headerText.innerHTML = task.taskHeader;
+  headerText.className = "header-text";
+  // Create Delete Button
+  let delBtn = document.createElement("button");
+  delBtn.innerHTML = "&times;";
+  delBtn.dataset.index = index;
+  delBtn.addEventListener("click", removeTask);
+  // Create Header
+  let taskHeader = document.createElement("div");
+  taskHeader.appendChild(headerText);
+  taskHeader.appendChild(delBtn);
+  taskHeader.className = "task-header";
+  // Create Span
+  let taskDescription = document.createElement("div");
+  taskDescription.className = "task-span";
+  taskDescription.innerHTML = task.taskDescription;
+  // Create Div
+  let divEl = document.createElement("div");
+  divEl.appendChild(taskHeader);
+  divEl.appendChild(taskDescription);
+  divEl.draggable = "true";
+  divEl.className = "task-dropbox";
+  // Return
+  return divEl;
+}
+
+// Return objects of array
+function newTask(description, header) {
   return {
-    taskHeader: taskDescriptionSimple,
-    taskDescription: taskDescriptionDetailed,
+    taskDescription: description,
+    taskHeader: header,
   };
 }
 
-// Save tasks array to local storage
-function saveTasks() {
-  localStorage.setItem("tasks", JSON.stringify(tasks));
-}
-
-// Load tasks array from local storage
-function loadTasks() {
-  let tasksStr = localStorage.getItem("tasks");
-  return JSON.parse(tasksStr) ?? [];
-}
-
-// Create tasks HTML using JS
-function getTasksHTML(taskDescriptionSimple, taskDescriptionDetailed) {
-  // Collapsable button element
-  let collapsableBtnEl = document.createElement("collapsableBtn");
-  collapsableBtnEl.type = "button";
-  collapsableBtnEl.class = "collapsable";
-  collapsableBtnEl.innerHTML = taskDescriptionSimple;
-
-  // Drop box description
-  let dropBoxDescriptionEl = document.createElement("dropBoxP");
-  dropBoxDescriptionEl.innerHTML = taskDescriptionDetailed;
-
-  // Add description to drop box div Element
-  let dropBoxDivEl = document.createElement("dropBoxDiv");
-  dropBoxDivEl.appendChild("dropBoxP");
+function removeTask(e) {
+  // Get index of task to remove
+  let taskIndex = +e.target.dataset.index;
+  if (e.target.parentNode.parentNode.parentNode === taskEl1) {
+    tasksToDo.splice(taskIndex, 1);
+  } else if (e.target.parentNode.parentNode.parentNode === taskEl2) {
+    tasksOnHold.splice(taskIndex, 1);
+  } else {
+    tasksDone.splice(taskIndex, 1);
+  }
+  displayAll();
+  saveArrays();
 }

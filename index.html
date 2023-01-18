@@ -6,36 +6,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>My Task Manager</title>
     <link rel="stylesheet" href="style.css" />
+    <script src="main.js" defer></script>
   </head>
   <body>
     <!--Tasks-->
     <div id="taskbox-container">
-      <div class="task-container">
-        <header>To Do <button id="add-task">+</button></header>
-        <button class="task-dropbox" draggable="true">
-          Draggable Item Test
-        </button>
-        <button class="task-dropbox" draggable="true">
-          Draggable Item Test
-        </button>
+      <div>
+        <header>Priority: High</header>
+        <div class="taskbox" id="taskEl1"></div>
+        <button id="add-task">+ Add</button>
       </div>
-      <div class="task-container">
-        <header>On Hold</header>
-        <button class="task-dropbox" draggable="true">
-          Draggable Item Test
-        </button>
-        <button class="task-dropbox" draggable="true">
-          Draggable Item Test
-        </button>
+      <div>
+        <header>Priority: Medium</header>
+        <div class="taskbox" id="taskEl2"></div>
       </div>
-      <div class="task-container">
-        <header>Done</header>
-        <button class="task-dropbox" draggable="true">
-          Draggable Item Test
-        </button>
-        <button class="task-dropbox" draggable="true">
-          Draggable Item Test
-        </button>
+      <div>
+        <header>Priority: Low</header>
+        <div class="taskbox" id="taskEl3"></div>
       </div>
     </div>
   </body>
