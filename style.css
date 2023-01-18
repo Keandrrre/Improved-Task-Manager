@@ -6,7 +6,7 @@ header {
   background-color: slategray;
   box-shadow: inset 0px 0px 20px 10px rgba(0, 0, 0, 0.199);
   height: 30px;
-  width: 480px;
+  width: 580px;
   padding: 10px;
   text-align: center;
   font-weight: bold;
@@ -40,18 +40,21 @@ header {
   display: flex;
   flex-direction: column;
   background-color: rgb(255, 255, 255);
-  width: 500px;
-  height: 500px;
+  width: 600px;
+  height: 750px;
   text-align: center;
   filter: drop-shadow(0 0 0.75rem rgba(0, 0, 0, 0.199));
   overflow: auto;
+  padding-top: 15px;
 }
 
 #taskbox-container {
   display: flex;
   text-align: center;
   justify-content: space-around;
-  margin-top: 150px;
+  height: 100%;
+  width: 100%;
+  margin-top: 55px;
 }
 
 .drop-zone--over {

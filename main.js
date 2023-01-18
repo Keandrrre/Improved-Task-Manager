@@ -20,7 +20,7 @@ function createNewTask() {
   let taskDescription = prompt("Task Description: ");
   let taskHeader = prompt("Task Header");
   if (taskDescription.length > 0 && taskHeader.length > 0) {
-    tasksToDo.push(newTask(taskDescription, taskHeader));
+    tasksToDo.splice(0, 0, newTask(taskDescription, taskHeader));
   } else {
     alert("Could not add new task.");
   }
